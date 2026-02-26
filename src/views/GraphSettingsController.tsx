@@ -7,6 +7,7 @@ import useDebounce from "../use-debounce";
 
 const NODE_FADE_COLOR = "#bbb";
 const EDGE_FADE_COLOR = "#eee";
+const IS_MOBILE = typeof window !== "undefined" && window.matchMedia("(max-width: 767.98px)").matches;
 
 const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null }>> = ({ children, hoveredNode }) => {
   const sigma = useSigma();
@@ -28,14 +29,15 @@ const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null
       defaultDrawNodeLabel: drawLabel,
       defaultDrawNodeHover: drawHover,
       nodeReducer: (node: string, data: Attributes) => {
+        const displaySize = IS_MOBILE ? (data.size ?? 1) * 0.5 : data.size;
         if (debouncedHoveredNode) {
           return node === debouncedHoveredNode ||
             graph.hasEdge(node, debouncedHoveredNode) ||
             graph.hasEdge(debouncedHoveredNode, node)
-            ? { ...data, zIndex: 1 }
-            : { ...data, zIndex: 0, label: "", color: NODE_FADE_COLOR, image: null, highlighted: false };
+            ? { ...data, zIndex: 1, size: displaySize }
+            : { ...data, zIndex: 0, label: "", color: NODE_FADE_COLOR, image: null, highlighted: false, size: displaySize };
         }
-        return data;
+        return { ...data, size: displaySize };
       },
       edgeReducer: (edge: string, data: Attributes) => {
         if (debouncedHoveredNode) {
@@ -57,14 +59,17 @@ const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null
 
     sigma.setSetting(
       "nodeReducer",
-      debouncedHoveredNode
-        ? (node, data) =>
-            node === debouncedHoveredNode ||
+      (node: string, data: Attributes) => {
+        const displaySize = IS_MOBILE ? (data.size ?? 1) * 0.5 : data.size;
+        if (debouncedHoveredNode) {
+          return node === debouncedHoveredNode ||
             graph.hasEdge(node, debouncedHoveredNode) ||
             graph.hasEdge(debouncedHoveredNode, node)
-              ? { ...data, zIndex: 1 }
-              : { ...data, zIndex: 0, label: "", color: NODE_FADE_COLOR, image: null, highlighted: false }
-        : null,
+              ? { ...data, zIndex: 1, size: displaySize }
+              : { ...data, zIndex: 0, label: "", color: NODE_FADE_COLOR, image: null, highlighted: false, size: displaySize };
+        }
+        return { ...data, size: displaySize };
+      },
     );
     sigma.setSetting(
       "edgeReducer",
@@ -75,7 +80,7 @@ const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null
               : { ...data, color: EDGE_FADE_COLOR, hidden: true }
         : null,
     );
-  }, [debouncedHoveredNode]);
+  }, [sigma, graph, debouncedHoveredNode]);
 
   return <>{children}</>;
 };

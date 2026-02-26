@@ -20,6 +20,8 @@ import SearchField from "./SearchField";
 import Navbar from "./Navbar";
 import About from "./About";
 
+const IS_MOBILE = typeof window !== "undefined" && window.matchMedia("(max-width: 767.98px)").matches;
+
 const Root: FC = () => {
   const graph = useMemo(() => new Graph(), []);
   const [showContents, setShowContents] = useState(false);
@@ -44,7 +46,7 @@ const Root: FC = () => {
       labelColor: { color: "#000" },
       labelDensity: 0.07,
       labelGridCellSize: 60,
-      labelRenderedSizeThreshold: dataset?.labelThreshold || 15,
+      labelRenderedSizeThreshold: (dataset?.labelThreshold ?? 15) * (IS_MOBILE ? 0.5 : 1),
       labelFont: "Lato, sans-serif",
       zIndex: true,
     }),
