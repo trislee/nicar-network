@@ -79,9 +79,14 @@ const Root: FC = () => {
     }
   }, [activeTab]);
 
-  // Load data when activeTab changes (only for speakers/descriptions):
+  // Load data when activeTab changes (only for speakers/descriptions).
+  // When entering About, clear dataset so that switching back to a network tab
+  // shows nothing until the correct data has loaded (avoids flashing the previous network).
   useEffect(() => {
     if (activeTab === "about") {
+      setDataset(null);
+      setDataReady(false);
+      setHoveredNode(null);
       return;
     }
     setHoveredNode(null);
