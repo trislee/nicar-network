@@ -17,7 +17,8 @@ export interface Cluster {
 
 export interface Dataset {
   nodes: NodeData[];
-  edges: [string, string][];
+  /** Edge list: [sourceKey, targetKey] or [sourceKey, targetKey, weight]. Weight is used for edge size when present. */
+  edges: [string | number, string | number][] | [string | number, string | number, number][];
   clusters: Cluster[];
   bbox?: { x: Extent; y: Extent };
   labelThreshold: number;

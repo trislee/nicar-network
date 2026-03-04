@@ -34,3 +34,6 @@ tsconfig.tsbuildinfo
 
 scripts/schedules/
 scripts/graphml/
+
+scripts/*
+!scripts/*.py

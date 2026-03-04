@@ -22,7 +22,12 @@ const GraphDataController: FC<PropsWithChildren<{ dataset: Dataset | null; filte
         ...omit(clusters[node.cluster], "key"),
       }),
     );
-    dataset.edges.forEach(([source, target]) => graph.addEdge(source, target, { size: 1 }));
+    dataset.edges.forEach((edge) => {
+      const source = edge[0];
+      const target = edge[1];
+      const weight = edge.length === 3 ? Number(edge[2]) : 1;
+      graph.addEdge(source, target, { size: weight });
+    });
 
     // Set custom bbox if provided (after nodes are added)
     if (dataset.bbox && typeof (sigma as any).setCustomBBox === "function") {

@@ -14,10 +14,10 @@ URLS = [
     'https://schedules.ire.org/nicar-2023/nicar-2023-schedule.json',
     'https://schedules.ire.org/nicar-2024/nicar-2024-schedule.json',
     'https://schedules.ire.org/nicar-2025/nicar-2025-schedule.json',
-    'https://schedules.ire.org/nicar-2026/nicar-2026-schedule.json'
+    'https://ire-nicar-conference-schedules.s3.us-east-2.amazonaws.com/nicar-2026/nicar-2026-schedule.json'
 ]
 
-SCHEDULE_DIR = Path("../schedules")
+SCHEDULE_DIR = Path("./schedules")
 
 # let's be nice to Wayback Machine
 SLEEPY_SECONDS = 5

@@ -18,7 +18,7 @@ INPUT_GRAPHML = "graphml/speakers_layout.graphml"
 BOUND = 3000
 BOUNDING_BOX = {"x": [-BOUND + 500, BOUND + 500], "y": [-BOUND,BOUND]}
 
-LABEL_THRESHOLD = 12
+LABEL_THRESHOLD = 14
 
 if __name__ == "__main__":
 
@@ -30,7 +30,7 @@ if __name__ == "__main__":
     _edges_df = nx.to_pandas_edgelist(G=G)
 
     nodes_df = _nodes_df[["x", "y", "label", "size", "affiliation"]]
-    edges_df = _edges_df[["source", "target"]]
+    edges_df = _edges_df[["source", "target", "weight"]]
 
     nodes_df["cluster"] = nodes_df["affiliation"]
     nodes_df["cluster"].fillna("Other", inplace=True)
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     nodes_df["size"] /= NODE_SCALING
     nodes = nodes_df.to_dict(orient="records")
 
-    edges = [[label_to_index[e["source"]], label_to_index[e["target"]]] for e in edges_df.to_dict(orient="records")]
+    edges = [[label_to_index[e["source"]], label_to_index[e["target"]], e["weight"]] for e in edges_df.to_dict(orient="records")]
 
     clusters = [k for k, _ in Counter(nodes_df["cluster"]).most_common()]
 

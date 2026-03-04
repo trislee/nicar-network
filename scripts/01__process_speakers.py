@@ -231,14 +231,9 @@ if __name__ == "__main__":
     employers = dict(employers)
 
     name_to_employer = {
-    k: Counter(x for x in v if x).most_common(1)[0][0] if any(v) else None
-    for k, v in employers.items()
-}
-
-    # # DEBUG
-    # with open("all_speakers.txt", "w") as f:
-    #     for k in sorted(name_to_employer.keys()):
-    #         f.write(k + "\n")
+        k: Counter(x for x in v if x).most_common(1)[0][0] if any(v) else None
+        for k, v in employers.items()
+    }
 
     # 4. Convert data into GraphML format, for use in Gephi
 
@@ -257,24 +252,32 @@ if __name__ == "__main__":
     for rank, (node, score) in enumerate(top10, start=1):
         print(f"{rank:<6} {str(node):<20} {score * 100:.2f}%")
 
-    for i, name in enumerate(nx.shortest_path(G=G, source="Callum Thomson", target="Audrey Nielsen", weight = None)):
+    for i, name in enumerate(nx.shortest_path(G=_G, source="Callum Thomson", target="Audrey Nielsen", weight = None)):
         print(f"{i}. {name}")
 
     number_of_sessions = dict(Counter(chain.from_iterable(all_session_names)))
     nx.set_node_attributes(G=_G, values=number_of_sessions, name="sessions")
     nx.set_node_attributes(G=_G, values={k :v **0.5 for k, v in number_of_sessions.items()}, name="sessions_root_2")
-    nx.set_node_attributes(G=G, values=name_to_employer, name = "affiliation")
+    nx.set_node_attributes(G=_G, values=name_to_employer, name = "affiliation")
 
-    # DEBUG
-    # GRAPHML_DIR.mkdir(exist_ok=True)
-    # nx.write_graphml(G=_G, path = GRAPHML_DIR / "speakers_raw.graphml")
+    print("\neccentricities\n")
+    eccentricities = dict(nx.eccentricity(_G))
+    for name, ecc in sorted(eccentricities.items(), key = lambda item : item[1], reverse=True)[:10]:
+        print(name, ecc)
 
-    # # 5. [LOGS] Verify data and output, improve consolidation
+    GRAPHML_DIR.mkdir(exist_ok=True)
+    nx.write_graphml(G=_G, path = GRAPHML_DIR / "speakers_raw.graphml")
 
-    # all_employees = list(chain.from_iterable(employers.values()))
-    # employer_frequency = Counter(all_employees).most_common()
-    # with open("employers_list.txt", "w") as f:
-    #     f.write("\n".join(sorted(set(all_employees))))
-    # with open("employers_frequency.txt", "w") as f:
-    #     for employer, count in employer_frequency:
-    #         f.write(f"{employer:<50} {count}\n")
+    # 5. [LOGS] Verify data and output, improve consolidation
+
+    all_employees = list(chain.from_iterable(employers.values()))
+    employer_frequency = Counter(all_employees).most_common()
+    with open("employers_list.txt", "w") as f:
+        f.write("\n".join(sorted(set(all_employees))))
+    with open("employers_frequency.txt", "w") as f:
+        for employer, count in employer_frequency:
+            f.write(f"{employer:<50} {count}\n")
+
+    with open("all_speakers.txt", "w") as f:
+        for k in sorted(name_to_employer.keys()):
+            f.write(k + "\n")

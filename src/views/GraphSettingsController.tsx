@@ -8,7 +8,6 @@ import useDebounce from "../use-debounce";
 
 const NODE_FADE_COLOR = "#bbb";
 const EDGE_FADE_COLOR = "#eee";
-const EDGE_SIZE_HIGHLIGHT = 4;
 
 const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null }>> = ({ children, hoveredNode }) => {
   const sigma = useSigma();
@@ -26,7 +25,6 @@ const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null
   useEffect(() => {
     const hoveredColor: string = (debouncedHoveredNode && sigma.getNodeDisplayData(debouncedHoveredNode)?.color) || "";
     const displaySizeMultiplier = IS_MOBILE ? 0.5 : 1;
-    const edgeHighlightSize = IS_MOBILE ? EDGE_SIZE_HIGHLIGHT * 0.5 : EDGE_SIZE_HIGHLIGHT;
 
     setSettings({
       defaultDrawNodeLabel: drawLabel,
@@ -46,7 +44,7 @@ const GraphSettingsController: FC<PropsWithChildren<{ hoveredNode: string | null
         const displaySize = (data.size ?? 1) * displaySizeMultiplier;
         if (debouncedHoveredNode) {
           return graph.hasExtremity(edge, debouncedHoveredNode)
-            ? { ...data, color: hoveredColor, size: edgeHighlightSize }
+            ? { ...data, color: hoveredColor, size: displaySize * 3 }
             : { ...data, color: EDGE_FADE_COLOR, hidden: true };
         }
         return { ...data, size: displaySize };

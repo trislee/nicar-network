@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import networkx as nx
 import pandas as pd
 
-SCHEDULE_DIR = Path("../schedules")
+SCHEDULE_DIR = Path("./schedules")
 BAD_NER_LABELS = set(["TIME", "ORDINAL", "DATE", "CARDINAL", "MONEY"])
 CLEANING_JSON = Path("cleaning") / "descriptions.json"
 GRAPHML_DIR = Path("graphml")
@@ -179,16 +179,16 @@ if __name__ == "__main__":
 
     with open("entities_raw__full_1.txt", "w") as f:
         for item, count in c.most_common():
-            f.write(f"{item:<30} {count}\n")
+            f.write(f"{item}\n")
 
     with open("descriptions.txt", "w") as f:
         f.write("\n\n".join(all_descriptions))
 
     entities_set = {k for k, v in c.items() if v > FREQUENCY_THRESHOLD}
 
-    replacement_dict = entity_processing["replace"].copy()
-    replacement_dict.update({e : e for e in entities_set})
-    replacement_dict.update({e : e for e in entity_processing["missing"]})
+    replacement_dict = {e: e for e in entities_set}
+    replacement_dict.update({e: e for e in entity_processing["missing"]})
+    replacement_dict.update(entity_processing["replace"])
     replacement_dict = {k : v for k, v in replacement_dict.items() if ((k not in entity_processing["ignore_entities"]) & (v not in entity_processing["ignore_entities"]))}
 
     replacement_tuples = sorted([(k, v) for k, v in replacement_dict.items()], key = lambda e : len(e[0]), reverse = True)
@@ -207,7 +207,7 @@ if __name__ == "__main__":
 
     with open("entities_raw__full_2.txt", "w") as f:
         for item, count in c.most_common():
-            f.write(f"{item:<30} {count}\n")
+            f.write(f"{item:<30}\n")
 
     frequency = dict(c.most_common())
     all_combinations = defaultdict(float)
